@@ -11,17 +11,24 @@
 
     // TODO: add pictures of cars
     // TODO: use manual input in the calculations
+    // TODO: Sanity check on user input:
+    // - Only allow to sell original battery if the main battery was upgraded
+    // - Only allow to upgrade to a higher capacity
 
-    // Store configurator options in an JS-Object.
-    // These values should be made available for an admin through a UI and should be set by a server-side
-    // script language as a JS-literal.
+    /*
+    Store configurator options in an JS-Object.
+
+    These values should be made available for an admin through a UI and should be set by a server-side
+    script language as a JS-literal.
+    */
+
     var configs = {
         'Car model': {
-            '2011':     {'price':[7250, 10500] , 'capacity': 21.3, 'consumption': 175, 'fullspeed': 25},
-            '2013':     {'price':[9900, 14500] , 'capacity': 21.3, 'consumption': 169, 'fullspeed': 25},
-            '30 kWh':   {'price':[14900, 18000], 'capacity': 28.3, 'consumption': 169, 'fullspeed': 90},
-            '40 Kwh':   {'price':[28500, 33250], 'capacity': 38.0, 'consumption': 164, 'fullspeed': 65},
-            '62 kWh':   {'price':[49000, 49000], 'capacity': 59.5, 'consumption': 170, 'fullspeed': 45}
+            '2011':     {'price':[7250, 10500] , 'capacity': 21.3, 'consumption': 175, 'fullspeed': 25, 'soh': [0.7,0.75]},
+            '2013':     {'price':[9900, 14500] , 'capacity': 21.3, 'consumption': 169, 'fullspeed': 25, 'soh': [0.77,0.87]},
+            '30 kWh':   {'price':[14900, 18000], 'capacity': 28.3, 'consumption': 169, 'fullspeed': 90, 'soh': [0.82,0.88]},
+            '40 Kwh':   {'price':[28500, 33250], 'capacity': 38.0, 'consumption': 164, 'fullspeed': 65, 'soh': [0.92,0.96]},
+            '62 kWh':   {'price':[49000, 49000], 'capacity': 59.5, 'consumption': 170, 'fullspeed': 45, 'soh': [1,1]}
         },
         'Extender battery': {
             'None':     {'price': 0,   'capacity':0     },
@@ -40,8 +47,8 @@
             'Manual input': { unit: "€", min:0, max:10000, step: 50 }
         },
         'Original battery SOH': {
-            'Auto': null,
-            'Manual input': {unit: "%", min:0, max:100, step: 0.5}
+            'Automatic': null,
+            'Manual input': {unit: "%", value: 0.75, min:0, max:100, step: 0.5}
         },
         'Include car value': {
             'No': null,
@@ -50,29 +57,27 @@
         }
     };
 
-    // Store tables for calculations in a table
-    var consumption_table = [175,169,169,164,170];
-    var capacity_table = [21.3, 21.3, 28.3, 38, 59.5];
-    var SOH_table = [[0.7,0.75],[0.77,0.87],[0.82,0.88],[0.92,0.96],[1,1]];
-    var fullspeed_table = [25,25,90,65,45];
+    var soh_default_value = 0.75;
 
     // Variable initiations;
     var selected_car = null;
     var selected_extender = null;
     var selected_main = null;
-    var cost = 0;
-    var sellOriginalBattery = null;  // todo: implement calculation
-    var sell_battery_cost = 0;       // todo: implement calculation
-    var selected_value_cost = 0;     // todo: implement calculation
-    var originalBatterySOH = null;   // todo: implement calculation
-    var includeCarValue = null;      // todo: implement calculation
+
+    var selected_orig_batt = null;
+    var sell_battery_cost = null;
+    var manual_sell_orig_batt = null;
+    var manual_soh = null;
+
+    var selected_value_cost = null;     // todo: implement calculation
+    var selected_soh = null;
+    var selected_car_value = null;      // todo: implement calculation
 
     var usable_capacity = null;
     var range = null;
     var fullspeed_estimate = null;
 
-    var soh_value = 0.75;
-    var soh_main = 0.75;
+    var soh_value = null;
 
 </script>
 
@@ -109,6 +114,7 @@
 
             var index = 0;
             for(var option in options){
+                if( !options.hasOwnProperty(option)) continue;
                 addRadioLabel(newRow,option,index++,strToAttribute(caption));
                 if(option === "Manual input"){
                     var attributes = options[option];
@@ -139,7 +145,7 @@
                 name: name,
                 type: "number",
                 value: "0",
-                id: name + "-" + "manual",
+                id: name,
                 class: "number"
             });
 
@@ -153,20 +159,34 @@
 
     // Handle form changes
     form_Configurator.addEventListener("change",formChanged,false);
-    
-    function formChanged() {
-        selected_car        = document.forms['build-form']['car-model'].value;
-        selected_extender   = document.forms['build-form']['extender-battery'].value;
-        selected_main       = document.forms['build-form']['main-battery-upgrade'].value;
-        sellOriginalBattery = document.forms['build-form']['sell-original-battery'].value;
-        selected_soh        = document.forms['build-form']['original-battery-soh'].value;
-        includeCarValue     = document.forms['build-form']['include-car-value'].value;
 
+    function formChanged() {
+        readFormValues();
         calculate_stats();
         updateStats();
     }
 
+    function readFormValues() {
+        var form = document.forms['build-form'];
+
+        selected_car      = form['car-model'].value;
+        selected_extender = form['extender-battery'].value;
+        selected_main     = form['main-battery-upgrade'].value;
+
+        selected_orig_batt    = form['sell-original-battery'].value;
+        manual_sell_orig_batt = form['sell-original-battery-manual'].value;
+
+        selected_soh = form['original-battery-soh'].value;
+        manual_soh = form['original-battery-soh-manual'].value / 100;
+
+        selected_car_value = form['include-car-value'].value;
+    }
+
     function calculate_stats(){
+        // SOH (Status of Health)
+        if (selected_soh === "Automatic") soh_value = soh_default_value;
+        if (selected_soh === "Manual input") soh_value = manual_soh;
+
         // usable capacity
         usable_capacity =
             configs['Car model'][selected_car].capacity*soh_value
@@ -175,6 +195,22 @@
 
         // range estimate
         range = usable_capacity * 1000 / configs['Car model'][selected_car].consumption;
+
+        // sell original battery
+        switch(selected_orig_batt){
+            case "No":
+                sell_battery_cost = 0;
+                break;
+
+            case "Automatic":
+                sell_battery_cost = configs['Car model'][selected_car].capacity*soh_value * 150;
+                sell_battery_cost = Math.round(sell_battery_cost);
+                break;
+
+            case "Manual input":
+                sell_battery_cost = manual_sell_orig_batt ;
+                break;
+        }
 
         //upgrade cost estimate
         cost =
