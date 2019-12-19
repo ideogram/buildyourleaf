@@ -11,7 +11,6 @@
 
     // TODO: add pictures of cars
     // TODO: use manual input in the calculations
-    // TODO: add
 
     // Store configurator options in an JS-Object.
     // These values should be made available for an admin through a UI and should be set by a server-side
@@ -148,6 +147,7 @@
                 elem_radio.setAttribute(attribute, attributes[attribute]);
             }
 
+            setText(addElement(target,"span",{class: 'suffix'}),attributes['unit']);
         }
     }
 

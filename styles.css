@@ -34,39 +34,55 @@ body {
   #build-form input[type='radio']:checked + label + input.number {
     visibility: visible;
     width: 6em; }
+  #build-form input[type='radio'] + label + input.number + span.suffix {
+    visibility: hidden; }
+  #build-form input[type='radio']:checked + label + input.number + span.suffix {
+    visibility: visible; }
 
 /* Theming */
 /* Style radio buttons as real buttons using their labels */
-#build-form input[type='radio'] + label, #build-form input.number {
-  display: inline-block;
-  padding: 0.2em 2em;
-  margin: 0.35em;
-  border: 2px solid #555555;
-  border-radius: 0.3em;
-  cursor: pointer;
-  transition: background-color 300ms, border-color 300ms;
-  font-family: "Encode Sans", sans-serif;
-  color: #555555;
-  font-size: 16px;
-  text-align: center; }
-#build-form input[type='radio'] + label {
-  /* Style all the labels as buttons */ }
-  #build-form input[type='radio'] + label:hover {
-    /* mouse-over effect */
-    background-color: #f8f8f8; }
-#build-form input[type='radio']:checked + label {
-  /* active state of the buttons */
-  background-color: #000000;
-  border-color: #000000;
-  color: white; }
-#build-form input.number {
-  padding-left: 0;
-  margin-left: -1em;
-  border-left: 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  transition: width 500ms;
-  padding-right: 0; }
+#build-form {
+  /* Style labels connected to radio buttons */
+  /* Style input fields */
+  /* Style suffix */ }
+  #build-form input[type='radio'] + label, #build-form input.number {
+    display: inline-block;
+    padding: 0.2em 2em;
+    margin: 0.35em;
+    border: 2px solid #555555;
+    border-radius: 0.3em;
+    cursor: pointer;
+    transition: background-color 300ms, border-color 300ms;
+    font-family: "Encode Sans", sans-serif;
+    color: #555555;
+    font-size: 16px;
+    text-align: center; }
+  #build-form input[type='radio'] + label {
+    /* Style all the labels as buttons */ }
+    #build-form input[type='radio'] + label:hover {
+      /* mouse-over effect */
+      background-color: #f8f8f8; }
+  #build-form input[type='radio']:checked + label {
+    /* active state of the buttons */
+    background-color: #000000;
+    border-color: #000000;
+    color: white; }
+  #build-form input.number {
+    padding-left: 0;
+    margin-left: -1em;
+    border-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transition: width 500ms;
+    padding-right: 0;
+    color: black;
+    border-color: black;
+    background-color: #f0f0f0; }
+    #build-form input.number:focus {
+      background: #ffede6; }
+  #build-form .suffix {
+    font-family: "Encode Sans", sans-serif;
+    font-size: 16px; }
 
 .btn {
   padding: 3px 30px;

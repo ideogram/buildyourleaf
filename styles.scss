@@ -1,3 +1,6 @@
+// variables
+$clr-accent: #ff4c00;
+
 /* Reset */
 body{
   font-family: sans-serif;
@@ -50,6 +53,14 @@ body{
       width: 6em;
     }
 
+    & + label + input.number + span.suffix{
+      visibility: hidden;
+    }
+
+    &:checked + label + input.number + span.suffix{
+      visibility: visible;
+    }
+
   }
 }
 
@@ -74,6 +85,7 @@ body{
     text-align: center;
   }
 
+  /* Style labels connected to radio buttons */
   input[type='radio'] {
     & + label{
       @extend %button;
@@ -93,6 +105,7 @@ body{
     }
   }
 
+  /* Style input fields */
   input.number{
     @extend %button;
     padding-left: 0;
@@ -102,6 +115,19 @@ body{
     border-bottom-left-radius: 0;
     transition: width 500ms;
     padding-right: 0;
+    color: black;
+    border-color: black;
+    background-color: #f0f0f0;
+
+    &:focus{
+      background: mix($clr-accent,white,10%);
+    }
+  }
+
+  /* Style suffix */
+  .suffix{
+    font-family: "Encode Sans", sans-serif;
+    font-size: 16px;
   }
 }
 
@@ -132,6 +158,6 @@ body{
 dd{
   font-family: "Encode Sans Condensed",sans-serif;
   font-weight: 800;
-  color: #ff4c00;
+  color: $clr-accent;
   font-size: 1.1em;
 }
