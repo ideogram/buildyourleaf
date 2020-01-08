@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Build your Leaf</title>
+    <title>🍃Build your Leaf</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
@@ -90,11 +90,26 @@
     <dl><dt>Full speed charging</dt>    <dd id="stats_chargingspeed"></dd> </dl>
 </div>
 
+<div id="svgContainer">
+    <!-- This is an HTML div, and inside goes the SVG -->
+</div>
+
 <script>
     var form_Configurator = id("build-form");
 
+    loadPictures();
     create_configurator();
     formChanged();
+
+    /**
+     *  Load images of cars into our configurator
+     */
+    function loadPictures(){
+        target = document.getElementById("svgContainer");
+        loadSVG(target,"2011");
+        loadSVG(target,"2013");
+        // (...)
+    }
 
     /**
      * Creates all the DOM elements for the configurator tool based on the "configs" array
@@ -164,6 +179,7 @@
         readFormValues();
         calculate_stats();
         updateStats();
+        updateCar();
     }
 
     function readFormValues() {
@@ -241,6 +257,27 @@
         document.getElementById('stats_chargingspeed').innerHTML = "0-" + fullspeed_estimate.toFixed(0) + "% (" + (fullspeed_estimate * usable_capacity / 100).toFixed(1) + " kWh)";
     }
 
+    function updateCar() {
+        //  Hide all cars
+        document.querySelectorAll("svg").forEach(function (elem) { elem.style.opacity = 0  });
+
+        // Show selected car
+        document.getElementById("svg-"+selected_car).style.opacity = 1;
+
+        // Hide all extensions
+        document.querySelectorAll("[id*='upgrade']").forEach(function (elem) { elem.style.opacity = 0  });
+
+        // Show selected extension
+        if (selected_extender !== "None"){
+            console.log("Ext!");
+            if (selected_extender === "8.8 kWh") document.getElementById(selected_car + "-upgrade-" +  "8-8").style.opacity = 1;
+            if (selected_extender === "17.6 kWh") document.getElementById(selected_car + "-upgrade-" +  "17-6").style.opacity = 1;
+        }
+        console.log(selected_extender);
+
+
+    }
+
     // Utility functions to help manipulate the DOM
     function addElement(target, tag, attrs){
         var newElement = document.createElement(tag);
@@ -268,7 +305,22 @@
         return text.replace(/\W/g,'-').toLowerCase();
     }
 
+    /**
+     * Loads a SVG file from the 'assets' folder inline into a target DOM-object
+     * @param target DOM-object where the SVG will be appended to
+     * @param filename
+     */
+    function loadSVG(target, filename){
+        xhr = new XMLHttpRequest();
+        xhr.open("GET","./assets/" + filename + ".svg",false);
+
+        xhr.overrideMimeType("image/svg+xml");
+        xhr.send("");
+        target.appendChild(xhr.responseXML.documentElement);
+    }
+
 </script>
+
 
 </body>
 </html>

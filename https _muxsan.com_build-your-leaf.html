@@ -267,9 +267,15 @@ soh_main = 0.75;
 
 function select_soh(soh){
 	selected_soh = soh;
-	
-	if(selected_main == 0){ soh_value = SOH_table[selected_car][1]; soh_main = soh_value;}
-	else {soh_value = SOH_table[selected_main + 1][1]; soh_main = SOH_table[selected_car][1];}
+
+	soh_main  = SOH_table[selected_car][1];
+    if (selected_main == 0) {
+        soh_value =soh_main;
+//        soh_main  = soh_value;
+    }
+    else {
+        soh_value = SOH_table[selected_main + 1][1];
+    }
 	
 	if(selected_soh == 0){
 		

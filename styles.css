@@ -23,7 +23,14 @@ body {
   margin: 0;
   padding: 0; }
 
+#svgContainer {
+  width: 320px;
+  height: 240px; }
+  #svgContainer > svg {
+    width: 100%; }
+
 /* Behaviour */
+/* Behaviour --- BUTTONS */
 #build-form input[type='radio'] {
   /* Hide all the radio buttons */
   display: none; }
@@ -38,6 +45,17 @@ body {
     visibility: hidden; }
   #build-form input[type='radio']:checked + label + input.number + span.suffix {
     visibility: visible; }
+
+/* Behaviour --- SVG image */
+#svgContainer {
+  position: relative; }
+
+[id^="svg-"] {
+  opacity: 0.5;
+  position: absolute; }
+
+[id*="upgrade"] {
+  opacity: 0; }
 
 /* Theming */
 /* Style radio buttons as real buttons using their labels */
