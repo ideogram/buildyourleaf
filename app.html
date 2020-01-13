@@ -24,12 +24,13 @@
 
     var configs = {
         'Car model': {
-            '2011':     {'price':[7250, 10500] , 'capacity': 21.3, 'consumption': 175, 'fullspeed': 25, 'soh': [0.7,0.75]},
-            '2013':     {'price':[9900, 14500] , 'capacity': 21.3, 'consumption': 169, 'fullspeed': 25, 'soh': [0.77,0.87]},
-            '30 kWh':   {'price':[14900, 18000], 'capacity': 28.3, 'consumption': 169, 'fullspeed': 90, 'soh': [0.82,0.88]},
-            '40 Kwh':   {'price':[28500, 33250], 'capacity': 38.0, 'consumption': 164, 'fullspeed': 65, 'soh': [0.92,0.96]},
-            '62 kWh':   {'price':[49000, 49000], 'capacity': 59.5, 'consumption': 170, 'fullspeed': 45, 'soh': [1,1]}
+            'Gen. 1':   {'price':[7250, 10500] , 'capacity': 21.3, 'consumption': 175,   'fullspeed': 25, 'soh': 0.75},
+            'Gen. 2':   {'price':[9900, 14500] , 'capacity': 21.3, 'consumption': 169,   'fullspeed': 25, 'soh': 0.87},
+            'Gen. 3':   {'price':[14900, 18000], 'capacity': 28.3, 'consumption': 169,   'fullspeed': 90, 'soh': 0.88},
+            'Gen. 4':   {'price':[28500, 33250], 'capacity': 38.0, 'consumption': 164,   'fullspeed': 65, 'soh': 0.96},
+            'Gen. 5':   {'price':[49000, 49000], 'capacity': 59.5, 'consumption': 170,   'fullspeed': 45, 'soh': 1   }
         },
+
         'Extender battery': {
             'None':     {'price': 0,   'capacity':0     },
             '8.8 kWh':  {'price':3990, 'capacity':8.8   },
@@ -37,19 +38,22 @@
         },
         'Main battery upgrade': {
             'None':      {'price': 0,       'capacity': 0 },
-            'to 30 kWh': {'price': 6750,    'capacity': 30, 'fullspeed': 90 },
-            'to 40 kWh': {'price': 8500,    'capacity': 40, 'fullspeed': 65 },
-            'to 62 kWh': {'price': 10500,   'capacity': 62, 'fullspeed': 45 }
+            'to 30kWh': {'price': 6750,    'capacity': 30, 'fullspeed': 90 },
+            'to 40kWh': {'price': 8500,    'capacity': 40, 'fullspeed': 65 },
+            'to 62kWh': {'price': 10500,   'capacity': 62, 'fullspeed': 45 }
         },
+
         'Sell original battery': {
             'No':null,
             'Automatic': null,
             'Manual input': { unit: "€", min:0, max:10000, step: 50 }
         },
+
         'Original battery SOH': {
             'Automatic': null,
             'Manual input': {unit: "%", value: 0.75, min:0, max:100, step: 0.5}
         },
+
         'Include car value': {
             'No': null,
             'Automatic': null,
@@ -57,10 +61,8 @@
         }
     };
 
-    var soh_default_value = 0.75;
-
     // Variable initiations;
-    var selected_car = null;
+    var selected_model = null;
     var selected_extender = null;
     var selected_main = null;
 
@@ -106,8 +108,8 @@
      */
     function loadPictures(){
         target = document.getElementById("svgContainer");
-        loadSVG(target,"2011");
-        loadSVG(target,"2013");
+        loadSVG(target,"gen1");
+        loadSVG(target,"gen2");
         // (...)
     }
 
@@ -143,7 +145,7 @@
                 name: name,
                 type: "radio",
                 value: value,
-                id: name + "-" + index,
+                id: name + "-" + index
             });
 
             if (index === 0 ) elem_radio.checked = true;
@@ -155,20 +157,20 @@
             setText(label,value);
         }
 
-        function addTextfield(target,name,attributes){
+        function addTextfield(target,name,attrs){
             var elem_radio = addElement(target,"input",{
-                name: name,
-                type: "number",
-                value: "0",
-                id: name,
-                class: "number"
+                'name':     name,
+                'type':     "number",
+                'value':    "0",
+                'id':       name,
+                'class':    "number"
             });
 
-            for(var attribute in attributes){
-                elem_radio.setAttribute(attribute, attributes[attribute]);
+            for(var attr in attrs){
+                if (attrs.hasOwnProperty(attr)) elem_radio.setAttribute(attr, attrs[attr]);
             }
 
-            setText(addElement(target,"span",{class: 'suffix'}),attributes['unit']);
+            setText(addElement(target,"span",{"class": 'suffix'}),attrs['unit']);
         }
     }
 
@@ -185,12 +187,13 @@
     function readFormValues() {
         var form = document.forms['build-form'];
 
-        selected_car      = form['car-model'].value;
-        selected_extender = form['extender-battery'].value;
-        selected_main     = form['main-battery-upgrade'].value;
+        selected_model          = form['car-model'].value;
+        selected_model_id       = selected_model.toLowerCase().replace(/[^a-z0-9]{1}/g,""); // Used for DOM-finding.
+        selected_extender       = form['extender-battery'].value;
+        selected_main           = form['main-battery-upgrade'].value;
 
-        selected_orig_batt    = form['sell-original-battery'].value;
-        manual_sell_orig_batt = form['sell-original-battery-manual'].value;
+        selected_orig_batt      = form['sell-original-battery'].value;
+        manual_sell_orig_batt   = form['sell-original-battery-manual'].value;
 
         selected_soh = form['original-battery-soh'].value;
         manual_soh = form['original-battery-soh-manual'].value / 100;
@@ -200,17 +203,17 @@
 
     function calculate_stats(){
         // SOH (Status of Health)
-        if (selected_soh === "Automatic") soh_value = soh_default_value;
+        if (selected_soh === "Automatic") soh_value = configs['Car model'][selected_model].soh;
         if (selected_soh === "Manual input") soh_value = manual_soh;
 
         // usable capacity
         usable_capacity =
-            configs['Car model'][selected_car].capacity*soh_value
+            configs['Car model'][selected_model].capacity*soh_value
             + configs['Extender battery'][selected_extender].capacity
             + configs['Main battery upgrade'][selected_main].capacity;
 
         // range estimate
-        range = usable_capacity * 1000 / configs['Car model'][selected_car].consumption;
+        range = usable_capacity * 1000 / configs['Car model'][selected_model].consumption;
 
         // sell original battery
         switch(selected_orig_batt){
@@ -219,7 +222,7 @@
                 break;
 
             case "Automatic":
-                sell_battery_cost = configs['Car model'][selected_car].capacity*soh_value * 150;
+                sell_battery_cost = configs['Car model'][selected_model].capacity*soh_value * 150;
                 sell_battery_cost = Math.round(sell_battery_cost);
                 break;
 
@@ -240,10 +243,10 @@
 
         // fullspeed estimate
         if (selected_main === "None") {
-            if (selected_car !== "2011" && selected_car !== "2013") {
+            if (selected_model !== "Gen. 1" && selected_model !== "Gen. 2") {
                 impact_of_extender *= 2;
             }
-            fullspeed_estimate = (100 - configs['Car model'][selected_car].fullspeed ) * impact_of_extender + configs['Car model'][selected_car].fullspeed;
+            fullspeed_estimate = (100 - configs['Car model'][selected_model].fullspeed ) * impact_of_extender + configs['Car model'][selected_model].fullspeed;
 
         } else {
             fullspeed_estimate = (100 - configs['Main battery upgrade'][selected_main].fullspeed)*impact_of_extender + configs['Main battery upgrade'][selected_main].fullspeed;
@@ -262,20 +265,16 @@
         document.querySelectorAll("svg").forEach(function (elem) { elem.style.opacity = 0  });
 
         // Show selected car
-        document.getElementById("svg-"+selected_car).style.opacity = 1;
+        document.getElementById("svg-" + selected_model_id).style.opacity = 1;
 
         // Hide all extensions
         document.querySelectorAll("[id*='upgrade']").forEach(function (elem) { elem.style.opacity = 0  });
 
         // Show selected extension
         if (selected_extender !== "None"){
-            console.log("Ext!");
-            if (selected_extender === "8.8 kWh") document.getElementById(selected_car + "-upgrade-" +  "8-8").style.opacity = 1;
-            if (selected_extender === "17.6 kWh") document.getElementById(selected_car + "-upgrade-" +  "17-6").style.opacity = 1;
+            if (selected_extender === "8.8 kWh") document.getElementById(selected_model_id + "-upgrade-" +  "8-8").style.opacity = 1;
+            if (selected_extender === "17.6 kWh") document.getElementById(selected_model_id + "-upgrade-" +  "17-6").style.opacity = 1;
         }
-        console.log(selected_extender);
-
-
     }
 
     // Utility functions to help manipulate the DOM
