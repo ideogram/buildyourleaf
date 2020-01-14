@@ -40,8 +40,8 @@
         'Main battery upgrade': {
             'None':     {'price': 0,       'capacity': 0 },
             'to 30kWh': {'price': 6750,    'capacity': 28.3, 'fullspeed': 90, 'soh': 0.82 },
-            'to 40kWh': {'price': 8500,    'capacity': 38.0, 'fullspeed': 65, 'soh': 0.92 },
-            'to 62kWh': {'price': 10500,   'capacity': 55.0, 'fullspeed': 45, 'soh': 1 }
+            'to 40kWh': {'price': 8790,    'capacity': 38.0, 'fullspeed': 65, 'soh': 0.92 },
+            'to 62kWh': {'price': 12390,   'capacity': 55.0, 'fullspeed': 45, 'soh': 1 }
         },
 
         'Sell original battery': {
@@ -185,6 +185,7 @@
         updateCar();
     }
 
+
     function readFormValues() {
         var form = document.forms['build-form'];
 
@@ -203,6 +204,10 @@
         selected_car_value      = form['include-car-value'].value;
     }
 
+    /**
+     * MOST IMPORTANT FUNCTION: Calculate the stats: costs, range, capacity
+     *
+     */
     function calculate_stats(){
         // Create some references to the configs object
         var model =  configs['Car model'][selected_model];
