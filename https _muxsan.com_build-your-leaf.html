@@ -163,15 +163,16 @@ var range;
 function calculate_stats(){
 	//usable capacity
 	if(selected_main == 0){
-		usable_capacity = (capacity_table[selected_car] * soh_value) + selected_extender * 8.8;
+	    usable_capacity = (capacity_table[selected_car] * soh_value) + selected_extender * 8.8;
 	} else {
-		usable_capacity = (capacity_table[selected_main + 1] * soh_value) + selected_extender * 8.8;
+	    console.log(capacity_table[selected_main + 1],soh_value);
+	    usable_capacity = (capacity_table[selected_main + 1] * soh_value) + selected_extender * 8.8;
 	}
 	document.getElementById('stats_capacity').innerText = usable_capacity.toFixed(1) + "kWh";
 	
 	//range estimate
 	var range = usable_capacity * 1000 / consumption_table[selected_car];
-	document.getElementById('stats_range').innerText = range.toFixed(0) + "km";
+	document.getElementBypId('stats_range').innerText = range.toFixed(0) + "km";
 	
 	//upgrade cost estimate
 	var cost = extender_prices[selected_extender] + main_prices[selected_main] - sell_battery_cost + selected_value_cost;

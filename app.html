@@ -37,10 +37,10 @@
             '17.6 kWh': {'price':5990, 'capacity':17.6  }
         },
         'Main battery upgrade': {
-            'None':      {'price': 0,       'capacity': 0 },
-            'to 30kWh': {'price': 6750,    'capacity': 30, 'fullspeed': 90 },
-            'to 40kWh': {'price': 8500,    'capacity': 40, 'fullspeed': 65 },
-            'to 62kWh': {'price': 10500,   'capacity': 62, 'fullspeed': 45 }
+            'None':     {'price': 0,       'capacity': 0 },
+            'to 30kWh': {'price': 6750,    'capacity': 28.3, 'fullspeed': 90, 'soh': 0.82 },
+            'to 40kWh': {'price': 8500,    'capacity': 38.0, 'fullspeed': 65, 'soh': 0.92 },
+            'to 62kWh': {'price': 10500,   'capacity': 59.5, 'fullspeed': 45, 'soh': 1 }
         },
 
         'Sell original battery': {
@@ -189,28 +189,39 @@
 
         selected_model          = form['car-model'].value;
         selected_model_id       = selected_model.toLowerCase().replace(/[^a-z0-9]{1}/g,""); // Used for DOM-finding.
+
         selected_extender       = form['extender-battery'].value;
         selected_main           = form['main-battery-upgrade'].value;
 
         selected_orig_batt      = form['sell-original-battery'].value;
         manual_sell_orig_batt   = form['sell-original-battery-manual'].value;
 
-        selected_soh = form['original-battery-soh'].value;
-        manual_soh = form['original-battery-soh-manual'].value / 100;
+        selected_soh            = form['original-battery-soh'].value;
+        manual_soh              = form['original-battery-soh-manual'].value / 100;
 
-        selected_car_value = form['include-car-value'].value;
+        selected_car_value      = form['include-car-value'].value;
     }
 
     function calculate_stats(){
+        // Create some references to the configs object
+        var model =  configs['Car model'][selected_model];
+        var main = configs['Main battery upgrade'][selected_main];
+        var extender = configs['Extender battery'][selected_extender];
+
         // SOH (Status of Health)
-        if (selected_soh === "Automatic") soh_value = configs['Car model'][selected_model].soh;
+        if (selected_soh === "Automatic") soh_value = model.soh;
         if (selected_soh === "Manual input") soh_value = manual_soh;
 
         // usable capacity
-        usable_capacity =
-            configs['Car model'][selected_model].capacity*soh_value
-            + configs['Extender battery'][selected_extender].capacity
-            + configs['Main battery upgrade'][selected_main].capacity;
+        usable_capacity = extender.capacity;
+
+        if(selected_main === "None") {
+            // ... add the original battery capacity
+            usable_capacity += model.capacity*soh_value;
+        } else {
+            // ... add the capacity of the new main battery
+             usable_capacity += main.capacity*main.soh;
+        }
 
         // range estimate
         range = usable_capacity * 1000 / configs['Car model'][selected_model].consumption;
@@ -233,23 +244,23 @@
 
         //upgrade cost estimate
         cost =
-            configs['Extender battery'][selected_extender].price
-            + configs['Main battery upgrade'][selected_main].price
+            extender.price
+            + main.price
             - sell_battery_cost
             + selected_value_cost;
 
         // estimate of full-speed charging
-        impact_of_extender = configs['Extender battery'][selected_extender].capacity / (usable_capacity);
+        impact_of_extender = extender.capacity / (usable_capacity);
 
         // fullspeed estimate
         if (selected_main === "None") {
             if (selected_model !== "Gen. 1" && selected_model !== "Gen. 2") {
                 impact_of_extender *= 2;
             }
-            fullspeed_estimate = (100 - configs['Car model'][selected_model].fullspeed ) * impact_of_extender + configs['Car model'][selected_model].fullspeed;
+            fullspeed_estimate = (100 - model.fullspeed ) * impact_of_extender + model.fullspeed;
 
         } else {
-            fullspeed_estimate = (100 - configs['Main battery upgrade'][selected_main].fullspeed)*impact_of_extender + configs['Main battery upgrade'][selected_main].fullspeed;
+            fullspeed_estimate = (100 - main.fullspeed)*impact_of_extender + main.fullspeed;
         }
     }
 
