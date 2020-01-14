@@ -58,7 +58,7 @@
         'Include car value': {
             'No': null,
             'Automatic': null,
-            'Manual input': {unit: "€", min:0, max:10000, step: 50}
+            'Manual input': {unit: "€", min:0, max:10000, step: 50 }
         }
     };
 
@@ -72,9 +72,10 @@
     var manual_sell_orig_batt = null;
     var manual_soh = null;
 
-    var selected_value_cost = null;     // todo: implement calculation
+    var car_value = null;
     var selected_soh = null;
-    var selected_car_value = null;      // todo: implement calculation
+    var selected_incl_car_value = null;
+    var manual_car_value = null;
 
     var usable_capacity = null;
     var range = null;
@@ -203,7 +204,8 @@
         selected_soh            = form['original-battery-soh'].value;
         manual_soh              = form['original-battery-soh-manual'].value / 100;
 
-        selected_car_value      = form['include-car-value'].value;
+        selected_incl_car_value = form['include-car-value'].value;
+        manual_car_value        = form['include-car-value-manual'].value*1;
     }
 
     /**
@@ -215,11 +217,11 @@
         var main = configs['Main battery upgrade'][selected_main];
         var extender = configs['Extender battery'][selected_extender];
 
-        // SOH (Status of Health)
+        // determine SOH (Status of Health)
         if (selected_soh === "Automatic") soh_value = model.soh;
         if (selected_soh === "Manual input") soh_value = manual_soh;
 
-        // usable capacity
+        // estimate of --- USABLE CAPACITY ---
         usable_capacity = extender.capacity;
 
         if(selected_main === "None") {
@@ -230,17 +232,18 @@
              usable_capacity += main.capacity*main.soh;
         }
 
-        // range estimate
-        range = usable_capacity * 1000 / configs['Car model'][selected_model].consumption;
+        // estimate of --- RANGE ---
+        range = usable_capacity * 1000 / model.consumption;
 
-        // sell original battery
+        // estimate of ---  UPGRADE COSTS ---
+        // ... sell original battery
         switch(selected_orig_batt){
             case "No":
                 sell_battery_cost = 0;
                 break;
 
             case "Automatic":
-                sell_battery_cost = configs['Car model'][selected_model].capacity*soh_value * 150;
+                sell_battery_cost = model.capacity*soh_value * 150;
                 sell_battery_cost = Math.round(sell_battery_cost);
                 break;
 
@@ -249,17 +252,29 @@
                 break;
         }
 
-        //upgrade cost estimate
+        // ... include value of purchasing the car?
+        switch(selected_incl_car_value){
+            case "No":
+                car_value = 0;
+                break;
+            case "Automatic":
+                car_value = model.price[1];
+                break;
+            case "Manual input":
+                car_value = manual_car_value;
+                break;
+        }
+
+        // ... summation
         cost =
             extender.price
             + main.price
             - sell_battery_cost
-            + selected_value_cost;
+            + car_value;
 
-        // estimate of full-speed charging
+        // estimate of --- FULL-SPEED CHARGING ---
         impact_of_extender = extender.capacity / (usable_capacity);
 
-        // fullspeed estimate
         if (selected_main === "None") {
             if (selected_model !== "Gen. 1" && selected_model !== "Gen. 2") {
                 impact_of_extender *= 2;
