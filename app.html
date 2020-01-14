@@ -104,6 +104,13 @@
     create_configurator();
     formChanged();
 
+    function formChanged() {
+        readFormValues();
+        calculate_stats();
+        updateStats();
+        updatePreviewPicture();
+    }
+
     /**
      *  Load images of cars into our configurator
      */
@@ -178,14 +185,9 @@
     // Handle form changes
     form_Configurator.addEventListener("change",formChanged,false);
 
-    function formChanged() {
-        readFormValues();
-        calculate_stats();
-        updateStats();
-        updateCar();
-    }
-
-
+    /**
+     * Read values from the form and assing them to 'global' values
+     */
     function readFormValues() {
         var form = document.forms['build-form'];
 
@@ -206,7 +208,6 @@
 
     /**
      * MOST IMPORTANT FUNCTION: Calculate the stats: costs, range, capacity
-     *
      */
     function calculate_stats(){
         // Create some references to the configs object
@@ -270,21 +271,27 @@
         }
     }
 
+    /**
+     * Update the content of the DOM-elements that contain the stats (results) of the selected options
+     */
     function updateStats(){
-        document.getElementById('stats_cost').innerHTML = "&euro;" + cost.toFixed(0);
-        document.getElementById('stats_capacity').innerText = usable_capacity.toFixed(1) + "kWh";
-        document.getElementById('stats_range').innerText = range.toFixed(0) + "km";
-        document.getElementById('stats_chargingspeed').innerHTML = "0-" + fullspeed_estimate.toFixed(0) + "% (" + (fullspeed_estimate * usable_capacity / 100).toFixed(1) + " kWh)";
+        document.getElementById('stats_cost').innerHTML             = "&euro;" + cost.toFixed(0);
+        document.getElementById('stats_capacity').innerText         = usable_capacity.toFixed(1) + "kWh";
+        document.getElementById('stats_range').innerText            = range.toFixed(0) + "km";
+        document.getElementById('stats_chargingspeed').innerHTML    = "0-" + fullspeed_estimate.toFixed(0) + "% (" + (fullspeed_estimate * usable_capacity / 100).toFixed(1) + " kWh)";
     }
 
-    function updateCar() {
+    /**
+     * Update the picture of the car by showing and hiding different SVG's and different layers
+     */
+    function updatePreviewPicture(a) {
         //  Hide all cars
         document.querySelectorAll("svg").forEach(function (elem) { elem.style.opacity = 0  });
 
         // Show selected car
         document.getElementById("svg-" + selected_model_id).style.opacity = 1;
 
-        // Hide all extensions
+        // Hide all battery extensions
         document.querySelectorAll("[id*='upgrade']").forEach(function (elem) { elem.style.opacity = 0  });
 
         // Show selected extension
