@@ -8,18 +8,25 @@ body{
 }
 
 /* Layout */
+.build-form{
+  display: table;
+}
+
 .configurator-row{
-  overflow: hidden; // Give block height
-  display: block;
+  display: table-row;
 }
 
 .caption{
-  display: inline-block;
+  display: table-cell;
   width: 10em;
-  float: left;
   text-align: right;
-  padding-right: 1em;
   line-height: 2.4em;
+  padding-right: 1em;
+}
+
+.configurator-options{
+  display: table-cell;
+  padding-bottom: 1em;
 }
 
 #stats{
