@@ -1,7 +1,19 @@
-var LeafExtBatt =     {
+var LeafExtBatt = {
     'None': {price: 0, capacity: 0},
     '8.8 kWh': {price: 3990, capacity: 8.8},
     '17.6 kWh': {price: 5990, capacity: 17.6}
+};
+
+var VanExtBat             = {
+    'None': {price: 0, capacity: 0},
+    '26 kWh': {price: 9680, capacity: 26},
+    '35 kWh': {price: 12100, capacity: 35},
+    '44 kWh': {price: 14520, capacity: 44},
+    '53 kWh': {price: 16940, capacity: 53}
+};
+var EvaliaExtBat                = {
+    'None': {price: 0, capacity: 0},
+    '26 kWh': {price: 9680, capacity: 26}
 };
 
 var configs = {
@@ -12,7 +24,7 @@ var configs = {
             consumption: 175,
             fullspeed: 25,
             soh: 0.75,
-            'Extender battery' : LeafExtBatt
+            'Extender battery': LeafExtBatt
         },
         'Gen. 2': {
             price: [9900, 14500],
@@ -20,7 +32,7 @@ var configs = {
             consumption: 169,
             fullspeed: 25,
             soh: 0.87,
-            'Extender battery' : LeafExtBatt
+            'Extender battery': LeafExtBatt
         },
         'Gen. 3': {
             price: [14900, 18000],
@@ -28,7 +40,7 @@ var configs = {
             consumption: 169,
             fullspeed: 90,
             soh: 0.88,
-            'Extender battery' : LeafExtBatt
+            'Extender battery': LeafExtBatt
         },
         'Gen. 4': {
             price: [28500, 33250],
@@ -36,7 +48,7 @@ var configs = {
             consumption: 164,
             fullspeed: 65,
             soh: 0.96,
-            'Extender battery' : LeafExtBatt
+            'Extender battery': LeafExtBatt
         },
         'Gen. 5': {
             price: [49000, 49000],
@@ -44,9 +56,40 @@ var configs = {
             consumption: 170,
             fullspeed: 45,
             soh: 1,
-            'Extender battery' : LeafExtBatt
+            'Extender battery': LeafExtBatt
+        },
+        'e-NV200 VAN 24kWh': {
+            price: [16500, 22000],
+            capacity: 22,
+            consumption: 190,
+            fullspeed: 45,
+            soh: 0.95,
+            'Extender battery': VanExtBat
+        },
+        'e-NV200 VAN 40kWh': {
+            price: [28500, 36000],
+            capacity: 38,
+            consumption: 205,
+            fullspeed: 45,
+            soh: 1,
+            'Extender battery': VanExtBat
+        },
+        'e-NV200 EVALIA 24kWh': {
+            price: [23500, 30000],
+            capacity: 22,
+            consumption: 190,
+            fullspeed: 45,
+            soh: 0.95,
+            'Extender battery': EvaliaExtBat
+        },
+        'e-NV200 EVALIA 40kWh': {
+            price: [38000, 38000],
+            capacity: 38,
+            consumption: 205,
+            fullspeed: 45,
+            soh: 1,
+            'Extender battery': EvaliaExtBat
         }
-
     },
     'Main battery upgrade': {
         'None': {price: 0, capacity: 0},
@@ -69,3 +112,4 @@ var configs = {
         'Manual input': {unit: '€', min: 0, max: 10000, step: 50}
     }
 };
+
