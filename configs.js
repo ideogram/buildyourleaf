@@ -17,6 +17,7 @@ var EvaliaExtBat                = {
 };
 
 var configs = {
+    'Car Type': {'car':'car', 'van':'van'},
     'Car model': {
         'Gen. 1': {
             price: [7250, 10500],
@@ -24,6 +25,7 @@ var configs = {
             consumption: 175,
             fullspeed: 25,
             soh: 0.75,
+            type: 'car',
             'Extender battery': LeafExtBatt
         },
         'Gen. 2': {
@@ -32,6 +34,7 @@ var configs = {
             consumption: 169,
             fullspeed: 25,
             soh: 0.87,
+            type: 'car',
             'Extender battery': LeafExtBatt
         },
         'Gen. 3': {
@@ -40,6 +43,7 @@ var configs = {
             consumption: 169,
             fullspeed: 90,
             soh: 0.88,
+            type: 'car',
             'Extender battery': LeafExtBatt
         },
         'Gen. 4': {
@@ -48,6 +52,7 @@ var configs = {
             consumption: 164,
             fullspeed: 65,
             soh: 0.96,
+            type: 'car',
             'Extender battery': LeafExtBatt
         },
         'Gen. 5': {
@@ -56,6 +61,7 @@ var configs = {
             consumption: 170,
             fullspeed: 45,
             soh: 1,
+            type: 'car',
             'Extender battery': LeafExtBatt
         },
         'e-NV200 VAN 24kWh': {
@@ -64,6 +70,7 @@ var configs = {
             consumption: 190,
             fullspeed: 45,
             soh: 0.95,
+            type: 'van',
             'Extender battery': VanExtBat
         },
         'e-NV200 VAN 40kWh': {
@@ -72,6 +79,7 @@ var configs = {
             consumption: 205,
             fullspeed: 45,
             soh: 1,
+            type: 'van',
             'Extender battery': VanExtBat
         },
         'e-NV200 EVALIA 24kWh': {
@@ -80,6 +88,7 @@ var configs = {
             consumption: 190,
             fullspeed: 45,
             soh: 0.95,
+            type: 'van',
             'Extender battery': EvaliaExtBat
         },
         'e-NV200 EVALIA 40kWh': {
@@ -88,6 +97,7 @@ var configs = {
             consumption: 205,
             fullspeed: 45,
             soh: 1,
+            type: 'van',
             'Extender battery': EvaliaExtBat
         }
     },

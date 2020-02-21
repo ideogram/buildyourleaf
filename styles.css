@@ -54,6 +54,13 @@ body {
   #build-form input[type='radio']:checked + label + input.number + span.suffix {
     visibility: visible; }
 
+#build-form #options-CAR-MODEL label {
+  display: none; }
+#build-form #options-CAR-MODEL.car-type-van label.van {
+  display: inline-block; }
+#build-form #options-CAR-MODEL.car-type-car label.car {
+  display: inline-block; }
+
 /* Behaviour --- SVG image */
 #svgContainer {
   position: relative; }

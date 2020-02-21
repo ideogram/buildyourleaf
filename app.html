@@ -97,6 +97,9 @@
         id("include-car-value-0").checked = true;
         id('original-battery-soh-manual').value = 77;
         id('sell-original-battery-manual').value = 5000;
+
+        // Add extra 'type' class to car-model labels
+
     }
 
 
@@ -104,35 +107,41 @@
      * Fill the values for the Battery Extension
      */
     function updateCar(e){
-        if (e.target.name !== 'car-model') return;
+        if (e.target.name === 'car-model') {
 
-        var form = document.forms['build-form'];
-        var selected_model    = form['car-model'].value;
+            var form           = document.forms['build-form'];
+            var selected_model = e.target.value;
 
-        // Retrieve available options for model
-        options = configs['Car model'][selected_model]['Extender battery'];
+            // Retrieve available options for model
+            options = configs['Car model'][selected_model]['Extender battery'];
 
-        // Clear all the options
-        elem_options           = id("options-EXTENDER-BATTERY");
-        elem_options.innerHTML = "";
+            // Clear all the options
+            elem_options           = id("options-EXTENDER-BATTERY");
+            elem_options.innerHTML = "";
 
-        // Fill the form with the options for the selected car model
-        var index = 0;
-        for (var option in options) {
-            if (!options.hasOwnProperty(option)) continue;
-            addRadioLabel(elem_options, option, index++, 'extender-battery');
+            // Fill the form with the options for the selected car model
+            var index = 0;
+            for (var option in options) {
+                if (!options.hasOwnProperty(option)) continue;
+                addRadioLabel(elem_options, option, index++, 'extender-battery');
+            }
+
+            // Set choice for extender battery and main battery upgrade to "None"
+            id('extender-battery-0').checked     = true;
+            id('main-battery-upgrade-0').checked = true;
+
+            // Update the manual value for the SOH
+            id('original-battery-soh-manual').value = configs['Car model'][selected_model]['soh'] * 100;
+
+            // Update the manual value for the price of the original battery
+            id('sell-original-battery-manual').value =
+                ~~(configs['Car model'][selected_model]['capacity'] * configs['Car model'][selected_model]['soh'] * 150);
         }
 
-        // Set choice for extender battery and main battery upgrade to "None"
-        id('extender-battery-0').checked = true;
-        id('main-battery-upgrade-0').checked = true;
-
-        // Update the manual value for the SOH
-        id('original-battery-soh-manual').value = configs['Car model'][selected_model]['soh']*100;
-
-        // Update the manual value for the price of the original battery
-        id('sell-original-battery-manual').value =
-            ~~(configs['Car model'][selected_model]['capacity']*configs['Car model'][selected_model]['soh'] * 150);
+        if (e.target.name === "car-type"){
+            var car_type = e.target.value;
+            id('options-CAR-MODEL').className = "configurator-options car-type-"+car_type;
+        }
     }
 
 
@@ -289,18 +298,26 @@
      * Add a row to the options list
      */
     function addRow(caption, options){
+        // Add row to configurator
         var elem_row = addElement(form_Configurator,"div",{class: 'configurator-row'});
 
+        // add caption
         var elem_categoryName = addElement(elem_row,"span",{'class': "caption"});
         setText(elem_categoryName, caption);
 
+        // Create container for all options
         var elem_options = addElement(elem_row,"div",{'class':"configurator-options", id: "options-"+strToAttribute(caption).toUpperCase()});
 
+        // Radio-buttons and labels
         var index = 0;
         for(var option in options){
             if( !options.hasOwnProperty(option)) continue;
 
-            addRadioLabel(elem_options,option,index++,strToAttribute(caption));
+            l = addRadioLabel(elem_options,option,index++,strToAttribute(caption));
+
+            if ( caption === 'Car model'){
+                l[1].className = configs['Car model'][option].type;
+            }
 
             if(option === "Manual input"){
                 var attributes = options[option];
@@ -325,6 +342,7 @@
         });
 
         setText(label,value);
+        return([elem_radio,label])
     }
 
     /**

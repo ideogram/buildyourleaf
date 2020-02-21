@@ -78,7 +78,21 @@ body{
     &:checked + label + input.number + span.suffix{
       visibility: visible;
     }
+  }
+}
 
+// Show/hide car model buttons based on car-type
+#build-form #options-CAR-MODEL {
+  label {
+    display: none;
+  }
+
+  &.car-type-van label.van{
+    display: inline-block;
+  }
+
+  &.car-type-car label.car{
+    display: inline-block;
   }
 }
 
