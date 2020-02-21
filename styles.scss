@@ -8,12 +8,15 @@ body{
 }
 
 /* Layout */
-#build-form{
-  display: grid;
-  grid-template-columns: max-content 1fr;
+.configurator-row{
+  overflow: hidden; // Give block height
+  display: block;
 }
 
 .caption{
+  display: inline-block;
+  width: 10em;
+  float: left;
   text-align: right;
   padding-right: 1em;
   line-height: 2.4em;
@@ -41,8 +44,6 @@ body{
     width: 100%;
   }
 }
-
-
 
 /* Behaviour */
 

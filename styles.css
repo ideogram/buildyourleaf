@@ -5,11 +5,14 @@ body {
   font-size: 16px; }
 
 /* Layout */
-#build-form {
-  display: grid;
-  grid-template-columns: max-content 1fr; }
+.configurator-row {
+  overflow: hidden;
+  display: block; }
 
 .caption {
+  display: inline-block;
+  width: 10em;
+  float: left;
   text-align: right;
   padding-right: 1em;
   line-height: 2.4em; }
