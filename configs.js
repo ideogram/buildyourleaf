@@ -17,7 +17,7 @@ var EvaliaExtBat                = {
 };
 
 var configs = {
-    'Car Type': {'car':'car', 'van':'van'},
+    'Car Type': {'car':'', 'van':''},
     'Car model': {
         'Gen. 1': {
             price: [7250, 10500],

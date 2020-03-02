@@ -14,6 +14,12 @@ body{
 
 .configurator-row{
   display: table-row;
+  height: 60px;
+  vertical-align: middle;
+
+  & > * {
+    vertical-align: middle;
+  }
 }
 
 .caption{
@@ -26,14 +32,13 @@ body{
 
 .configurator-options{
   display: table-cell;
-  padding-bottom: 1em;
 }
 
 #stats{
   dl{
     text-align: center;
     display: inline-block;
-    width: 9em;
+    width: 10em;
   }
 
   dt, dd{
@@ -149,6 +154,11 @@ body{
       background-color: #000000;
       border-color: #000000;
       color: white;
+    }
+
+    &:disabled + label{
+      color: #cccccc !important;
+      border-color: #cccccc !important;
     }
   }
 

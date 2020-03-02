@@ -9,7 +9,11 @@ body {
   display: table; }
 
 .configurator-row {
-  display: table-row; }
+  display: table-row;
+  height: 60px;
+  vertical-align: middle; }
+  .configurator-row > * {
+    vertical-align: middle; }
 
 .caption {
   display: table-cell;
@@ -19,13 +23,12 @@ body {
   padding-right: 1em; }
 
 .configurator-options {
-  display: table-cell;
-  padding-bottom: 1em; }
+  display: table-cell; }
 
 #stats dl {
   text-align: center;
   display: inline-block;
-  width: 9em; }
+  width: 10em; }
 #stats dt, #stats dd {
   display: block;
   margin: 0;
@@ -100,6 +103,9 @@ body {
     background-color: #000000;
     border-color: #000000;
     color: white; }
+  #build-form input[type='radio']:disabled + label {
+    color: #cccccc !important;
+    border-color: #cccccc !important; }
   #build-form input.number {
     padding-left: 0;
     margin-left: -1em;
